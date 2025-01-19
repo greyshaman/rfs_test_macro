@@ -5,7 +5,7 @@ edition = "2021"
 repository = "https://github.com/greyshaman/rfs_test_macro"
 homepage = "https://github.com/greyshaman/rfs_test_macro"
 authors = ["Sergey Reshetnikov <shaman@simmirra.com>"]
-categories = ["filesystem", "test", "development-tools::procedural-macro-helpers"]
+categories = ["filesystem", "testing", "development-tools::procedural-macro-helpers"]
 keywords = ["filesystem", "test", "macro"]
 license = "MIT OR Apache-2.0"
 
