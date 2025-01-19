@@ -1,0 +1,22 @@
+[package]
+name = "rfs_test_macro"
+version = "1.0.0"
+edition = "2021"
+repository = "https://github.com/greyshaman/rfs_test_macro"
+homepage = "https://github.com/greyshaman/rfs_test_macro"
+authors = ["Sergey Reshetnikov <shaman@simmirra.com>"]
+categories = ["filesystem", "test", "macro"]
+keywords = ["filesystem", "test", "macro"]
+license = "MIT OR Apache-2.0"
+
+description = """
+This package provides macro to simplify usage of rfs_tester crate.
+"""
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["full"]}
+quote = "1.0"
+proc-macro2 = "1.0"
