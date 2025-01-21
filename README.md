@@ -21,11 +21,44 @@ rfs_test_macro = "1.0"
 Then, use the macro in your test files:
 
 ```rust
-use rfs_test_macro::rfs_test;
+const CONFIG: &str = r#"---
+    - !directory
+        name: test
+            content:
+                - !link
+                    name: file_link.txt
+                    target: LICENSE-MIT
+"#;
 
-#[rfs_test]
-fn my_test_case() {
-    // Your test code here
+#[rfs_test(config = CONFIG, start_point = ".")]
+fn link_creation_test(dirname: &str) -> std::io::Result<()> {
+    let link_path = format!("{dirname}/file_link.txt");
+    let meta = fs::metadata(link_path)?;
+    assert!(meta.is_symlink());
+    Ok(())
+}
+```
+
+You can specify config inline:
+
+```rust
+#[rfs_test(
+    config = r#"---
+    - !directory
+        name: test
+        content:
+          - !file
+              name: test.txt
+              content:
+                !inline_text "Hello, world!"
+    "#,
+    start_point = "."
+)]
+fn file_creation_test_with_macro(dirname: &str) -> std::io::Result<()> {
+    let file_path = format!("{}/test.txt", dirname);
+    let content = std::fs::read_to_string(file_path)?;
+    assert_eq!(content, "Hello, world!");
+    Ok(())
 }
 ```
 

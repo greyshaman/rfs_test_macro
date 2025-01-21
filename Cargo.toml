@@ -1,11 +1,11 @@
 [package]
 name = "rfs_test_macro"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 repository = "https://github.com/greyshaman/rfs_test_macro"
 homepage = "https://github.com/greyshaman/rfs_test_macro"
 authors = ["Sergey Reshetnikov <shaman@simmirra.com>"]
-categories = ["filesystem", "test", "macro"]
+categories = ["filesystem", "development-tools::testing", "development-tools::procedural-macro-helpers"]
 keywords = ["filesystem", "test", "macro"]
 license = "MIT OR Apache-2.0"
 
