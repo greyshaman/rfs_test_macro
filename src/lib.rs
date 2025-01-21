@@ -54,13 +54,13 @@ pub fn rfs_test(attr: TokenStream, item: TokenStream) -> TokenStream {
         )
         .unwrap()
     });
-    let start_point = start_point.unwrap_or_else(|| syn::parse_str(r#"".""#).unwrap());
+    let start_point = start_point.unwrap_or_else(|| syn::parse_str(".").unwrap());
 
     // Generate the test function
     let expanded = quote! {
         #[test]
-        fn #fn_name() {
-            use rfs_tester::{FsTester, FileContent};
+        fn #fn_name() -> Result<(), rfs_tester::FsTesterError> {
+            use rfs_tester::{FsTester, FileContent, FsTesterError};
             use rfs_tester::config::{Configuration, ConfigEntry, DirectoryConf, FileConf};
 
             // Use the provided parameters
@@ -68,12 +68,13 @@ pub fn rfs_test(attr: TokenStream, item: TokenStream) -> TokenStream {
             let start_point: &str = #start_point;
 
             // Create the temporary file system
-            let tester = FsTester::new(config_str, start_point);
+            let tester = FsTester::new(config_str, start_point)?;
 
             // Run the test
             tester.perform_fs_test(|dirname| {
                 #fn_block
             });
+            Ok(())
         }
     };
 
