@@ -15,7 +15,7 @@ Add `rfs_test_macro` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rfs_test_macro = "1.0"
+rfs_test_macro = "1.1.1"
 ```
 
 Then, use the macro in your test files:
