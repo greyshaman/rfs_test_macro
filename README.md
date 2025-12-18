@@ -14,29 +14,38 @@ The `rfs_tester` crate creates a temporary directory for running filesystem test
 Add `rfs_test_macro` to your `Cargo.toml`:
 
 ```toml
-[dependencies]
-rfs_test_macro = "1.1.1"
+[dev-dependencies]
+rfs_test_macro = "1.1.2"
 ```
 
-Then, use the macro in your test files:
+Then, use the macro in your test files when temp dir should create in current folder:
 
 ```rust
 const CONFIG: &str = r#"---
     - !directory
         name: test
-            content:
-                - !link
-                    name: file_link.txt
-                    target: LICENSE-MIT
+        content:
+            - !link
+                name: file_link.txt
+                target: LICENSE-MIT
 "#;
 
-#[rfs_test(config = CONFIG, start_point = ".")]
+#[rfs_test(config = CONFIG)]
 fn link_creation_test(dirname: &str) -> std::io::Result<()> {
     let link_path = format!("{dirname}/file_link.txt");
     let meta = fs::metadata(link_path)?;
     assert!(meta.is_symlink());
     Ok(())
 }
+```
+
+Or when you want to place temp folder in another path you can set start_point parameter
+
+```rust
+...
+#[rfs_test(config = CONFIG, start_point = "/tmp")]
+fn link_creation_test(dirname: &str) -> std::io::Result<()> {
+...
 ```
 
 You can specify config inline:
@@ -51,8 +60,7 @@ You can specify config inline:
               name: test.txt
               content:
                 !inline_text "Hello, world!"
-    "#,
-    start_point = "."
+    "#
 )]
 fn file_creation_test_with_macro(dirname: &str) -> std::io::Result<()> {
     let file_path = format!("{}/test.txt", dirname);
