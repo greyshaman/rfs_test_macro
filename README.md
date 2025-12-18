@@ -15,7 +15,7 @@ Add `rfs_test_macro` to your `Cargo.toml`:
 
 ```toml
 [dev-dependencies]
-rfs_test_macro = "1.1.2"
+rfs_test_macro = "1.1.3"
 ```
 
 Then, use the macro in your test files when temp dir should create in current folder:
