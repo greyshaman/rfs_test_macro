@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{parse::Parser, parse_macro_input, Expr, ItemFn};
+use syn::{ItemFn, LitStr, parse::Parser, parse_macro_input};
 
 #[proc_macro_attribute]
 pub fn rfs_test(attr: TokenStream, item: TokenStream) -> TokenStream {
@@ -11,27 +11,28 @@ pub fn rfs_test(attr: TokenStream, item: TokenStream) -> TokenStream {
     let fn_block = &input_fn.block;
 
     // Parse the attributes
-    let attr_parser = |stream: TokenStream2| -> Result<(Option<Expr>, Option<Expr>), syn::Error> {
-        let mut config = None;
-        let mut start_point = None;
+    let attr_parser =
+        |stream: TokenStream2| -> Result<(Option<String>, Option<String>), syn::Error> {
+            let mut config = None;
+            let mut start_point = None;
 
-        // Manually parse the attributes
-        let parser = syn::meta::parser(|meta| {
-            if meta.path.is_ident("config") {
-                let value = meta.value()?;
-                config = Some(value.parse()?);
-            } else if meta.path.is_ident("start_point") {
-                let value = meta.value()?;
-                start_point = Some(value.parse()?);
-            } else {
-                return Err(meta.error("unsupported attribute"));
-            }
-            Ok(())
-        });
+            // Manually parse the attributes
+            let parser = syn::meta::parser(|meta| {
+                if meta.path.is_ident("config") {
+                    let value: LitStr = meta.value()?.parse()?;
+                    config = Some(value.value());
+                } else if meta.path.is_ident("start_point") {
+                    let value: LitStr = meta.value()?.parse()?;
+                    start_point = Some(value.value());
+                } else {
+                    return Err(meta.error("unsupported attribute"));
+                }
+                Ok(())
+            });
 
-        parser.parse2(stream)?;
-        Ok((config, start_point))
-    };
+            parser.parse2(stream)?;
+            Ok((config, start_point))
+        };
 
     // Parse the attributes
     let (config, start_point) = match attr_parser(attr.into()) {
@@ -39,22 +40,10 @@ pub fn rfs_test(attr: TokenStream, item: TokenStream) -> TokenStream {
         Err(err) => return err.to_compile_error().into(),
     };
 
-    // Default values
-    let config = config.unwrap_or_else(|| {
-        syn::parse_str(
-            r#"---
-        - !directory
-            name: test
-            content:
-              - !file
-                  name: test.txt
-                  content:
-                    !inline_text "Hello, world!"
-        "#,
-        )
-        .unwrap()
-    });
-    let start_point = start_point.unwrap_or_else(|| syn::parse_str(".").unwrap());
+    let config = config.expect("config is required parameter");
+
+    // Default value
+    let start_point = start_point.unwrap_or_else(|| ".".to_string());
 
     // Generate the test function
     let expanded = quote! {
